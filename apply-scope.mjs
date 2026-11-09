@@ -1,5 +1,7 @@
-import { realpathSync } from 'node:fs';
+import { existsSync, realpathSync, readFileSync, statSync } from 'node:fs';
 import { isAbsolute, dirname, join, resolve } from 'node:path';
+import { homedir } from 'node:os';
+import { parseEnv } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { getCareerOpsRoot } from './path-resolver.mjs';
 import { isMainModule } from './lib/is-main-module.mjs';
@@ -15,6 +17,8 @@ export class ApplyScopeError extends Error {
 const LAUNCH_KEYS = new Set(['headless', 'channel', 'args', 'timeout']);
 const LAUNCH_CHANNELS = new Set(['chrome', 'chromium', 'msedge']);
 const ATTACH_ARG = /remote-debugging|user-data-dir|DevToolsActivePort|devtools/i;
+const PROFILE_ENABLED = new Set(['1', 'true', 'yes', 'on']);
+const PROFILE_DISABLED = new Set(['', '0', 'false', 'no', 'off']);
 
 function realOrLexical(p) {
   try {
@@ -97,6 +101,80 @@ export function defaultLaunchOptions() {
   return freshLaunchOptions({ headless: false });
 }
 
+function defaultChromeUserDataDir(platform, processEnv, homeDirectory) {
+  if (platform === 'win32') {
+    return join(processEnv.LOCALAPPDATA || join(homeDirectory, 'AppData', 'Local'), 'Google', 'Chrome', 'User Data');
+  }
+  if (platform === 'darwin') {
+    return join(homeDirectory, 'Library', 'Application Support', 'Google', 'Chrome');
+  }
+  const configHome = processEnv.XDG_CONFIG_HOME?.trim() || join(homeDirectory, '.config');
+  return join(configHome, 'google-chrome');
+}
+
+function isDirectory(path) {
+  return existsSync(path) && statSync(path).isDirectory();
+}
+
+export function resolveApplyLaunchConfig({
+  processEnv = process.env,
+  platform = process.platform,
+  homeDirectory = homedir(),
+  dataRoot = getCareerOpsRoot(),
+} = {}) {
+  const envFilePath = join(dataRoot, '.env');
+  const fileEnv = existsSync(envFilePath) ? parseEnv(readFileSync(envFilePath, 'utf8')) : {};
+  const setting = (name) => {
+    const value = Object.hasOwn(processEnv, name) ? processEnv[name] : fileEnv[name];
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
+  const enabled = setting('CAREER_OPS_USE_CHROME_PROFILE').toLowerCase();
+  if (PROFILE_DISABLED.has(enabled)) {
+    return { mode: 'browser', options: defaultLaunchOptions() };
+  }
+  if (!PROFILE_ENABLED.has(enabled)) {
+    throw new ApplyScopeError(
+      'CAREER_OPS_USE_CHROME_PROFILE must be explicitly set to 1, true, yes, or on to use a Chrome profile.',
+    );
+  }
+
+  const configuredUserDataDir = setting('CAREER_OPS_CHROME_USER_DATA_DIR');
+  const unresolvedUserDataDir = configuredUserDataDir || defaultChromeUserDataDir(platform, processEnv, homeDirectory);
+  if (!isAbsolute(unresolvedUserDataDir)) {
+    throw new ApplyScopeError('CAREER_OPS_CHROME_USER_DATA_DIR must be an absolute path.');
+  }
+  const userDataDir = resolve(unresolvedUserDataDir);
+
+  const profileDirectory = setting('CAREER_OPS_CHROME_PROFILE_DIRECTORY') || 'Default';
+  if (
+    profileDirectory === '.' ||
+    profileDirectory === '..' ||
+    profileDirectory.includes('\0') ||
+    /[\\/]/.test(profileDirectory)
+  ) {
+    throw new ApplyScopeError('CAREER_OPS_CHROME_PROFILE_DIRECTORY must be a single profile folder name.');
+  }
+
+  const profilePath = join(userDataDir, profileDirectory);
+  if (!isDirectory(userDataDir) || !isDirectory(profilePath)) {
+    throw new ApplyScopeError(
+      `Chrome profile not found at "${profilePath}". Check CAREER_OPS_CHROME_USER_DATA_DIR and ` +
+      'CAREER_OPS_CHROME_PROFILE_DIRECTORY; career-ops will not create a new profile.',
+    );
+  }
+
+  return {
+    mode: 'persistent',
+    userDataDir,
+    options: freshLaunchOptions({
+      channel: 'chrome',
+      headless: false,
+      args: [`--profile-directory=${profileDirectory}`],
+    }),
+  };
+}
+
 export function locateApplyReport(dataRoot, ref, io) {
   if (typeof ref !== 'string' || ref.trim() === '') return { ok: false, reason: 'missing' };
   const looksLikePath = /[\\/]/.test(ref) || isAbsolute(ref);
@@ -114,7 +192,7 @@ export function locateApplyReport(dataRoot, ref, io) {
 }
 
 function printUsage() {
-  console.log('Usage: node apply-scope.mjs <root|check-path|launch-options>');
+  console.log('Usage: node apply-scope.mjs <root|check-path|launch-options|launch-config>');
 }
 
 if (isMainModule(import.meta.url)) {
@@ -131,8 +209,10 @@ if (isMainModule(import.meta.url)) {
       console.log(insideAnyRoot(arg));
     } else if (cmd === 'launch-options') {
       console.log(JSON.stringify(defaultLaunchOptions()));
+    } else if (cmd === 'launch-config') {
+      console.log(JSON.stringify(resolveApplyLaunchConfig()));
     } else {
-      console.error('Usage: node apply-scope.mjs <root|check-path|launch-options>');
+      console.error('Usage: node apply-scope.mjs <root|check-path|launch-options|launch-config>');
       process.exit(2);
     }
   } catch (e) {

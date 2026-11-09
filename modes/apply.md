@@ -12,7 +12,12 @@ Work only inside this checkout. Run `node apply-scope.mjs root` and read or sear
 
 Do not search the home directory. Do not grep or open another career-ops install.
 
-Open the form in a Playwright browser this project launches. Run `node apply-scope.mjs launch-options` and pass that object to `chromium.launch`. Do not call `chromium.connect` or `connectOverCDP`. Do not read `DevToolsActivePort`. Do not pass a remote-debugging port or a Chrome user-data directory.
+Open the form in a Playwright browser this project launches. Run `node apply-scope.mjs launch-config` and follow the returned mode:
+
+- `browser`: pass `config.options` to `chromium.launch`, then create a context and page.
+- `persistent`: only when `CAREER_OPS_USE_CHROME_PROFILE=1` is explicitly configured, launch `chromium.launchPersistentContext(config.userDataDir, config.options)` and use the returned context's first page, or create one if it has none. The candidate must close every Chrome window and background process first. This grants the browser automation access to that profile's logged-in sessions, cookies, and installed extensions; sites may also update account data before submission, so use it only on a posting the candidate trusts.
+
+Never attach to a running browser. Do not call `chromium.connect` or `connectOverCDP`, read `DevToolsActivePort`, or pass remote-debugging options. The profile opt-in is off by default. Do not submit the form.
 
 If Playwright is not available, ask the candidate to paste the questions or share a screenshot.
 
@@ -158,7 +163,7 @@ Before drafting answers, read the matched report's Block G fixed-term finding an
 
 ## Step 1 — Detect the job
 
-**With Playwright:** Run `node apply-scope.mjs launch-options` and launch Chromium with that object. Open the posting URL in that browser. Snapshot that page. Read the title, the URL, and the visible content. Do not attach to a browser the candidate already has open. Do not read `DevToolsActivePort`.
+**With Playwright:** Run `node apply-scope.mjs launch-config` and follow its mode. Open the posting URL in the selected browser. Snapshot that page. Read the title, URL, and visible content. Do not attach to a running browser or read `DevToolsActivePort`.
 
 **Without Playwright:** Ask the candidate to:
 - Share a screenshot of the form (Read tool can read images)
@@ -502,6 +507,12 @@ Field-tested across ~12 Playwright-driven applications (Ashby, Greenhouse, Lever
 - **Symptom:** Setting a Workday text field's value programmatically (without real keystrokes) leaves it visually filled but empty to Workday's validation — the React `onChange` never fires, so Save throws "required" on a visibly-filled field. Yes/No dropdowns also vary their option order per question, so a positional click can select the wrong answer (e.g. "No" on *are you authorized to work?*).
 - **Agent:** For required text fields, **type** real keystrokes (focus → select-all → type), or verify each value registered before Save, Next, Continue or Submit. Run the Step 7b required-field sweep on every step before Save, Next, Continue or Submit — Workday adds a required `Role Description` to each experience block, which is invisible until the block exists and surfaces as one validation error per block otherwise. Fill from the Step 4b sources: `config/profile.yml` for identity and contact (the address block is often below the fold), the tailored CV for employers, titles, dates, and role descriptions. For dropdowns, use **type-ahead** (open → type the option text → confirm the highlight) instead of positional clicks, and verify each selection.
 - **Candidate:** Reviews the filled step — especially work-authorization/sponsorship dropdowns and any EEO/legal attestations — before Save/Submit.
+
+### Workday — a direct `/apply` link can 404 while the posting is live (#6417)
+
+- **Symptom:** A link that goes straight to `.../job/<slug>/apply`, often from a promoted LinkedIn post with `utm_*`/`source=` parameters, shows "Sorry, the page you are looking for doesn't exist". The same URL without `/apply` loads the full JD. `check-liveness.mjs` checks whatever URL it is given and its Workday API path keeps `/apply`, so a live posting can come back expired.
+- **Agent:** Don't record the posting as closed. Strip the `/apply` suffix and the query string (`utm_*`, `source=`) first, then run the liveness check and open the posting from that listing URL, and use the page's own Apply control. If that listing is also gone, it is closed and the normal closed-posting handling applies.
+- **Candidate:** If they hit the 404 in their own browser, give them the listing URL to start from instead.
 
 ### SuccessFactors-family — uploaded resume can silently diverge from the stored profile (#1870)
 

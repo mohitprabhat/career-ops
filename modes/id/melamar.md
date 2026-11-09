@@ -22,12 +22,12 @@ Mode interaktif untuk saat kandidat mengisi formulir lamaran di browser Playwrig
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Langkah 1 -- Deteksi lowongan
 
-**Dengan Playwright:** Jalankan `node apply-scope.mjs launch-options`, buka lowongan di jendela itu, lalu baca judul, URL, dan konten yang terlihat.
+**Dengan Playwright:** Jalankan `node apply-scope.mjs launch-config`, ikuti mode browser yang ditentukan, buka lowongan di jendela itu, lalu baca judul, URL, dan konten yang terlihat.
 
 **Tanpa Playwright:** Minta kandidat untuk:
 - Membagikan tangkapan layar formulir (Read tool bisa membaca gambar)

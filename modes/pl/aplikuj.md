@@ -22,12 +22,12 @@ Tryb interaktywny na moment, gdy kandydat wypełnia formularz aplikacyjny w prze
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Krok 1 -- Wykryj ofertę
 
-**Z Playwright:** Uruchom `node apply-scope.mjs launch-options`, otwórz ogłoszenie w tym oknie i odczytaj tytuł, URL i widoczną treść.
+**Z Playwright:** Uruchom `node apply-scope.mjs launch-config`, użyj wskazanego trybu przeglądarki, otwórz ogłoszenie w tym oknie i odczytaj tytuł, URL i widoczną treść.
 
 **Bez Playwright:** Poproś kandydata, aby:
 - Udostępnił zrzut ekranu formularza (narzędzie Read czyta obrazy)

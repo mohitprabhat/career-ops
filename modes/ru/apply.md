@@ -22,12 +22,12 @@
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Шаг 1 — Определить вакансию
 
-**С Playwright:** Запустить через `node apply-scope.mjs launch-options`, открыть вакансию в этом окне и прочитать заголовок, URL и видимое содержимое.
+**С Playwright:** Запустить `node apply-scope.mjs launch-config`, следовать указанному режиму браузера, открыть вакансию в этом окне и прочитать заголовок, URL и видимое содержимое.
 
 **Без Playwright:** Попросить кандидата:
 - Поделиться скриншотом формы

@@ -22,12 +22,12 @@ Interactive mode जब candidate इस प्रोजेक्ट के Play
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Step 1 -- Offer Detect करें
 
-**Playwright के साथ:** `node apply-scope.mjs launch-options` se window kholen, posting wahan kholen, title, URL aur visible content padhen.
+**Playwright के साथ:** `node apply-scope.mjs launch-config` chalayen, diye gaye browser mode ka paalan karen, posting kholen, title, URL aur visible content padhen.
 
 **Playwright के बिना:** Candidate से कहें:
 - Form का screenshot share करें (Read tool images पढ़ता है)

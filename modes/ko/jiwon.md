@@ -22,12 +22,12 @@
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Step 1 -- 공고 감지
 
-**Playwright 사용 시:** `node apply-scope.mjs launch-options`로 연 창에서 공고를 열고 title, URL, 보이는 내용을 읽습니다.
+**Playwright 사용 시:** `node apply-scope.mjs launch-config`를 실행하고 지정된 브라우저 모드를 따라 공고를 열어 title, URL, 보이는 내용을 읽습니다.
 
 **Playwright 없이 진행 시:** 후보자에게 다음 중 하나를 요청합니다.
 - 지원서 폼 스크린샷 공유 (Read tool이 이미지를 읽을 수 있음)

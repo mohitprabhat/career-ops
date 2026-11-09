@@ -22,12 +22,12 @@ Interactieve modus voor wanneer de kandidaat een sollicitatieformulier invult in
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Stap 1 -- Ontdek de vacature
 
-**Met Playwright:** Start met `node apply-scope.mjs launch-options`, open de vacature in dat venster en lees titel, URL en zichtbare inhoud.
+**Met Playwright:** Start met `node apply-scope.mjs launch-config`, volg de gekozen browsermodus, open de vacature in dat venster en lees titel, URL en zichtbare inhoud.
 
 **Zonder Playwright:** Vraag de kandidaat om:
 - Deel een screenshot van het formulier (de Read-tool leest de afbeeldingen)

@@ -22,12 +22,12 @@ Mode interactif pour le moment ou le candidat remplit un formulaire de candidatu
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Etape 1 -- Detecter l'offre
 
-**Avec Playwright :** Lancer avec `node apply-scope.mjs launch-options`, ouvrir l'offre dans cette fenêtre, puis lire le titre, l'URL et le contenu visible.
+**Avec Playwright :** Lancer `node apply-scope.mjs launch-config`, suivre le mode indiqué, ouvrir l'offre dans cette fenêtre, puis lire le titre, l'URL et le contenu visible.
 
 **Sans Playwright :** Demander au candidat de :
 - Partager une capture d'ecran du formulaire (le Read tool lit les images)
