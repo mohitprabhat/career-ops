@@ -12,7 +12,12 @@ Work only inside this checkout. Run `node apply-scope.mjs root` and read or sear
 
 Do not search the home directory. Do not grep or open another career-ops install.
 
-Open the form in a Playwright browser this project launches. Run `node apply-scope.mjs launch-options` and pass that object to `chromium.launch`. Do not call `chromium.connect` or `connectOverCDP`. Do not read `DevToolsActivePort`. Do not pass a remote-debugging port or a Chrome user-data directory.
+Open the form in a Playwright browser this project launches. Run `node apply-scope.mjs launch-config` and follow the returned mode:
+
+- `browser`: pass `config.options` to `chromium.launch`, then create a context and page.
+- `persistent`: only when `CAREER_OPS_USE_CHROME_PROFILE=1` is explicitly configured, launch `chromium.launchPersistentContext(config.userDataDir, config.options)` and use the returned context's first page, or create one if it has none. The candidate must close every Chrome window and background process first. This grants the browser automation access to that profile's logged-in sessions, cookies, and installed extensions; sites may also update account data before submission, so use it only on a posting the candidate trusts.
+
+Never attach to a running browser. Do not call `chromium.connect` or `connectOverCDP`, read `DevToolsActivePort`, or pass remote-debugging options. The profile opt-in is off by default. Do not submit the form.
 
 If Playwright is not available, ask the candidate to paste the questions or share a screenshot.
 
@@ -158,7 +163,7 @@ Before drafting answers, read the matched report's Block G fixed-term finding an
 
 ## Step 1 — Detect the job
 
-**With Playwright:** Run `node apply-scope.mjs launch-options` and launch Chromium with that object. Open the posting URL in that browser. Snapshot that page. Read the title, the URL, and the visible content. Do not attach to a browser the candidate already has open. Do not read `DevToolsActivePort`.
+**With Playwright:** Run `node apply-scope.mjs launch-config` and follow its mode. Open the posting URL in the selected browser. Snapshot that page. Read the title, URL, and visible content. Do not attach to a running browser or read `DevToolsActivePort`.
 
 **Without Playwright:** Ask the candidate to:
 - Share a screenshot of the form (Read tool can read images)

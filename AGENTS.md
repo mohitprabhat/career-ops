@@ -527,7 +527,7 @@ A single-string `modes_dir` (today's default, ~90% of users) behaves exactly as 
 Apply reads and searches only this checkout, plus the data root when `CAREER_OPS_ROOT` or `CAREER_OPS_DATA_DIR` is set. Run `node apply-scope.mjs root` and use only the directories it prints.
 
 - Do not search `$HOME`. Do not grep or open another career-ops install.
-- Open forms in a Playwright browser this project launches. Run `node apply-scope.mjs launch-options` and pass that object to `chromium.launch`. Do not call `chromium.connect` or `connectOverCDP`. Do not read `DevToolsActivePort`. Do not pass a remote-debugging port or a Chrome user-data directory.
+- Open forms in a Playwright browser this project launches. Run `node apply-scope.mjs launch-config` and follow its mode: use `chromium.launch(config.options)` for the default isolated browser, or `chromium.launchPersistentContext(config.userDataDir, config.options)` only when `CAREER_OPS_USE_CHROME_PROFILE=1` is explicitly configured. Before using a profile, require Chrome to be fully closed, including background processes. This grants automation access to that profile's logged-in sessions, cookies, and extensions; use only on a trusted posting. Never attach to a running browser or use remote debugging (`chromium.connect`, `connectOverCDP`, or `DevToolsActivePort`). Never submit an application.
 - If Playwright is unavailable, ask the candidate to paste the questions or share a screenshot.
 - Do not submit the form. Ethical Use still holds. Stop before Submit, Send, or Apply until the candidate confirms they submitted it.
 

@@ -10,8 +10,10 @@ personalized answers for each form question.
 ## Base workflow
 
 Follow `modes/apply.md` verbatim, including its Scope section. Run
-`node apply-scope.mjs root` and `node apply-scope.mjs launch-options`. Do not
-read `DevToolsActivePort` or attach to an existing browser. Do not submit the
+`node apply-scope.mjs root` and `node apply-scope.mjs launch-config`, then
+follow the returned mode. Existing Chrome profile use requires
+`CAREER_OPS_USE_CHROME_PROFILE=1` and all Chrome processes to be closed first.
+Never attach to a running browser or use remote debugging. Do not submit the
 form. The steps below are Singapore-specific field guidance for the GENERATE step.
 
 ## Singapore-specific fields

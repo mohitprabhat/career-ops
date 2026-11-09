@@ -63,6 +63,12 @@ claude   # or codex / qwen / opencode / agy / grok
 
 **On first launch, career-ops walks you through setup by chatting** — it asks for your CV, your details (name, target roles, salary), and sets up the job scanner with pre-configured companies. Nothing to edit by hand: just answer its questions. Then paste a job offer URL or description and it evaluates it, writes a report, generates a tailored PDF, and tracks it.
 
+#### Optional: use your existing Chrome profile in CLI apply mode
+
+CLI `apply` mode normally launches an isolated browser. To opt in to your existing Chrome profile, add `CAREER_OPS_USE_CHROME_PROFILE=1` to the data root's `.env` file. It uses Chrome's standard `User Data` directory and the `Default` profile by default; set `CAREER_OPS_CHROME_USER_DATA_DIR` to an absolute path or `CAREER_OPS_CHROME_PROFILE_DIRECTORY` (for example, `Profile 1`) to choose another profile.
+
+**Close every Chrome window and background process before starting apply mode.** The automation can act in the selected profile, which exposes its logged-in sessions, cookies, and extensions to pages it visits; a site may update account data before submission. Use this only on trusted job postings; the setting is off by default. It does not attach to an already-running Chrome process, and apply mode still stops before submitting an application.
+
 If you are using Codex, start the interactive session with `codex`. Slash commands are not guaranteed in Codex, so use the same mode names in a prompt if `/career-ops` is unavailable:
 
 ```text

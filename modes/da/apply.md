@@ -22,12 +22,12 @@ Interaktiv mode til det øjeblik, hvor kandidaten udfylder en ansøgningsformula
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Trin 1 -- Detektér opslaget
 
-**Med Playwright:** Kør `node apply-scope.mjs launch-options`, åbn opslaget i det vindue, og læs titel, URL og synligt indhold.
+**Med Playwright:** Kør `node apply-scope.mjs launch-config`, følg den angivne browsertype, åbn opslaget i det vindue, og læs titel, URL og synligt indhold.
 
 **Uden Playwright:** Bed kandidaten om at:
 - Dele et skærmbillede af formularen (Read-værktøjet læser billeder)

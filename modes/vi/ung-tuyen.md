@@ -30,7 +30,7 @@ Mode tương tác dành cho lúc ứng viên đang điền form ứng tuyển tr
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Bước 5 — Cổng preflight
@@ -90,7 +90,7 @@ Chức danh không thuộc danh tính. Tin được đổi tên sau khi đánh g
 
 ## Bước 1 — Phát hiện tin
 
-**Với Playwright:** Chạy `node apply-scope.mjs launch-options`, mở tin trong cửa sổ đó, rồi đọc tiêu đề, URL và nội dung hiển thị.
+**Với Playwright:** Chạy `node apply-scope.mjs launch-config`, làm theo chế độ trình duyệt được chỉ định, mở tin trong cửa sổ đó, rồi đọc tiêu đề, URL và nội dung hiển thị.
 
 **Không có Playwright:** yêu cầu ứng viên:
 - Chia sẻ ảnh chụp màn hình form (công cụ Read đọc được ảnh)

@@ -22,12 +22,12 @@ Interaktiver Modus für den Moment, in dem der Kandidat ein Bewerbungsformular i
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Schritt 1 — Stellenanzeige erkennen
 
-**Mit Playwright:** `node apply-scope.mjs launch-options` ausführen, die Stellenanzeige in diesem Fenster öffnen und Titel, URL und sichtbaren Inhalt lesen.
+**Mit Playwright:** `node apply-scope.mjs launch-config` ausführen, den angegebenen Browsermodus verwenden, die Stellenanzeige in diesem Fenster öffnen und Titel, URL und sichtbaren Inhalt lesen.
 
 **Ohne Playwright:** Den Kandidaten bitten, eines der folgenden zu tun:
 - Einen Screenshot des Formulars teilen (das Read-Tool kann Bilder lesen)

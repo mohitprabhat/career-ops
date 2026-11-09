@@ -24,7 +24,7 @@
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ## Step 5 -- Preflight gate
@@ -53,7 +53,7 @@ Application answers を生成する前に、form が意図した active job を�
 
 ## Step 1 -- Detect the job
 
-**With Playwright:** `node apply-scope.mjs launch-options` で起動したウィンドウに求人を開き、title、URL、visible content を読む。
+**With Playwright:** `node apply-scope.mjs launch-config` を実行して指定されたブラウザモードに従い、求人を開いて title、URL、visible content を読む。
 
 **Without Playwright:** 候補者に以下を依頼する：
 - Form の screenshot を共有（Read tool で画像を読める）

@@ -167,6 +167,8 @@ On first launch it asks for all that in chat. Nothing to configure by hand.
 - **Phone home.** No telemetry, no backend of ours. Your CV goes from your machine to the AI provider you chose, and nowhere else. The only public ledger is this repo: `HIRED.md` and its issues.
 - **Push you to apply below 4.0/5.** It will tell you not to. You can override it, and it will say so.
 
+For CLI apply mode, using a logged-in Chrome profile is optional and off by default. It requires closing Chrome first and gives browser automation access to that profile's sessions, cookies, and extensions. See the [setup guide](docs/SETUP.md#optional-use-your-existing-chrome-profile-in-cli-apply-mode) before enabling it.
+
 It reformulates your CV; it must never fabricate it. A check in code stops a PDF whose numbers or facts appear in neither your CV nor your article digest, but it cannot judge every rewording yet. Read every CV before you send it. Details in the [FAQ](#faq).
 
 ## Features

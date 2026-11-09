@@ -22,14 +22,14 @@
 
 ## Scope
 
-Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Launch with `node apply-scope.mjs launch-options`. Do not read `DevToolsActivePort` or attach to an existing browser. Do not submit the form.
+Follow the Scope section in `modes/apply.md`. Run `node apply-scope.mjs root` and stay inside the directories it prints. Run `node apply-scope.mjs launch-config` and follow its mode; use the existing Chrome profile only with `CAREER_OPS_USE_CHROME_PROFILE=1` after all Chrome processes are closed. Never attach to a running browser or use remote debugging. Do not submit the form.
 
 
 ---
 
 ## 步驟 1 — 擷取當前職缺表單
 
-**使用 Playwright**：執行 `node apply-scope.mjs launch-options`，在該視窗開啟職缺頁面，並讀取標題、URL 和頁面正文。
+**使用 Playwright**：執行 `node apply-scope.mjs launch-config` 並遵循指定的瀏覽器模式，在該視窗開啟職缺頁面，並讀取標題、URL 和頁面正文。
 
 **不使用 Playwright**：請求職者執行以下其中一項：
 - 傳送當前表單頁面的螢幕截圖（Read 工具能辨識並分析圖片）。

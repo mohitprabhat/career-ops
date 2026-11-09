@@ -155,6 +155,68 @@ test('freshLaunchOptions starts a new browser and refuses an attached one', asyn
   assert.equal(Object.hasOwn(HEADED_APPLY_LAUNCH, 'userDataDir'), false);
 });
 
+test('apply profile launch is explicit, validates the configured profile, and stays persistent', async () => {
+  const { resolveApplyLaunchConfig, ApplyScopeError } = await import('../apply-scope.mjs');
+  const root = scratch();
+  const userDataDir = join(root, 'Chrome User Data');
+  const profileDirectory = 'Profile 1';
+  mkdirSync(join(userDataDir, profileDirectory), { recursive: true });
+
+  try {
+    const disabled = resolveApplyLaunchConfig({
+      processEnv: { CAREER_OPS_CHROME_USER_DATA_DIR: userDataDir },
+      dataRoot: root,
+    });
+    assert.deepEqual(disabled, { mode: 'browser', options: { headless: false } });
+
+    writeFileSync(join(root, '.env'), [
+      'CAREER_OPS_USE_CHROME_PROFILE=1',
+      `CAREER_OPS_CHROME_USER_DATA_DIR=${userDataDir.replace(/\\/g, '/')}`,
+      `CAREER_OPS_CHROME_PROFILE_DIRECTORY=${profileDirectory}`,
+      '',
+    ].join('\n'));
+    const config = resolveApplyLaunchConfig({ processEnv: {}, dataRoot: root });
+    assert.equal(config.mode, 'persistent');
+    assert.equal(config.userDataDir, userDataDir);
+    assert.deepEqual(config.options, {
+      channel: 'chrome',
+      headless: false,
+      args: [`--profile-directory=${profileDirectory}`],
+    });
+
+    const shellOptOut = resolveApplyLaunchConfig({
+      processEnv: { CAREER_OPS_USE_CHROME_PROFILE: '0' },
+      dataRoot: root,
+    });
+    assert.equal(shellOptOut.mode, 'browser');
+    assert.throws(() => resolveApplyLaunchConfig({
+      processEnv: { CAREER_OPS_USE_CHROME_PROFILE: '1', CAREER_OPS_CHROME_USER_DATA_DIR: 'relative/path' },
+      dataRoot: root,
+    }), /must be an absolute path/);
+    assert.throws(() => resolveApplyLaunchConfig({
+      processEnv: {
+        CAREER_OPS_USE_CHROME_PROFILE: '1',
+        CAREER_OPS_CHROME_USER_DATA_DIR: userDataDir,
+        CAREER_OPS_CHROME_PROFILE_DIRECTORY: '..',
+      },
+      dataRoot: root,
+    }), /single profile folder name/);
+    assert.throws(() => resolveApplyLaunchConfig({
+      processEnv: {
+        CAREER_OPS_USE_CHROME_PROFILE: '1',
+        CAREER_OPS_CHROME_USER_DATA_DIR: join(root, 'missing'),
+      },
+      dataRoot: root,
+    }), /Chrome profile not found/);
+    assert.throws(() => resolveApplyLaunchConfig({
+      processEnv: { CAREER_OPS_USE_CHROME_PROFILE: 'maybe' },
+      dataRoot: root,
+    }), ApplyScopeError);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('locateApplyReport reads a report inside the data root and refuses another install', async () => {
   const { locateApplyReport, ApplyScopeError } = await import('../apply-scope.mjs');
   const root = scratch();
@@ -244,15 +306,18 @@ test('apply command refuses a report path outside the project', () => {
   }
 });
 
-test('apply instructions name the scope guard and stop telling agents to attach to Chrome', () => {
+test('apply instructions gate Chrome profile use and keep submission human-controlled', () => {
   const agents = readFileSync(join(ROOT, 'AGENTS.md'), 'utf8');
   const apply = readFileSync(join(ROOT, 'modes/apply.md'), 'utf8');
   for (const text of [agents, apply]) {
     assert.match(text, /apply-scope\.mjs/);
     assert.match(text, /DevToolsActivePort/);
+    assert.match(text, /launch-config/);
+    assert.match(text, /CAREER_OPS_USE_CHROME_PROFILE/);
   }
   assert.match(agents, /NEVER submit an application/);
   assert.equal(apply.includes('Read active Chrome tab'), false);
+  assert.match(apply, /Do not submit the form/);
 
   const session = readFileSync(join(ROOT, 'web/src/lib/apply/session.ts'), 'utf8');
   assert.match(session, /HEADED_APPLY_LAUNCH/);
@@ -265,6 +330,7 @@ test('apply instructions name the scope guard and stop telling agents to attach 
   const modeText = listTree(join(ROOT, 'modes'), { match: /\.md$/ })
     .map((path) => `${relative(ROOT, path)}\n${readFileSync(path, 'utf8')}`)
     .join('\n');
+  assert.equal(modeText.includes('apply-scope.mjs launch-options'), false);
   for (const phrase of FORBIDDEN_DETECT) {
     assert.equal(modeText.includes(phrase), false, `still telling apply to read an open Chrome tab: ${phrase}`);
   }
@@ -289,6 +355,14 @@ test('check-path and launch-options stay inside the project browser', () => {
   assert.equal(options.headless, false);
   assert.equal(Object.hasOwn(options, 'channel'), false);
   assert.equal(JSON.stringify(options).includes('remote-debugging'), false);
+
+  const launchConfig = spawnSync(NODE, [join(ROOT, 'apply-scope.mjs'), 'launch-config'], {
+    cwd: ROOT,
+    env: { ...process.env, CAREER_OPS_USE_CHROME_PROFILE: '0' },
+    encoding: 'utf8',
+  });
+  assert.equal(launchConfig.status, 0, describeSpawn(launchConfig));
+  assert.deepEqual(JSON.parse(launchConfig.stdout), { mode: 'browser', options: { headless: false } });
 
   const help = spawnSync(NODE, [join(ROOT, 'apply-scope.mjs'), '--help'], {
     cwd: ROOT,

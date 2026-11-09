@@ -12,7 +12,12 @@
 
 不要搜索用户主目录。不要 grep 或打开另一份 career-ops 安装。
 
-在本项目启动的 Playwright 浏览器中打开表单。运行 `node apply-scope.mjs launch-options`，把输出的对象传给 `chromium.launch`。不要调用 `chromium.connect` 或 `connectOverCDP`。不要读取 `DevToolsActivePort`。不要传入远程调试端口或 Chrome 用户数据目录。
+在本项目启动的 Playwright 浏览器中打开表单。运行 `node apply-scope.mjs launch-config` 并遵循返回的模式：
+
+- `browser`：把 `config.options` 传给 `chromium.launch`，然后创建 context 和 page。
+- `persistent`：仅在显式配置了 `CAREER_OPS_USE_CHROME_PROFILE=1` 时，调用 `chromium.launchPersistentContext(config.userDataDir, config.options)`，并使用返回 context 的第一个 page，如果没有则新建一个。候选人必须先完全关闭所有 Chrome 窗口及后台进程。这会授予浏览器自动化访问该配置文件的登录会话、Cookie 和已安装扩展；站点也可能在提交前更新账户数据，因此仅在候选人信任的职位上使用。
+
+绝不要连接到正在运行的浏览器。不要调用 `chromium.connect` 或 `connectOverCDP`，不要读取 `DevToolsActivePort`，也不要传入远程调试选项。该 Profile 选项默认关闭。不要提交表单。
 
 如果 Playwright 不可用，请候选人粘贴表单问题或提供截图。
 
@@ -158,7 +163,7 @@
 
 ## 步骤 1 — 捕获当前职位
 
-**使用 Playwright：** 运行 `node apply-scope.mjs launch-options`，用输出的对象启动 Chromium。在这个浏览器中打开职位 URL，对页面做快照，读取标题、URL 和可见内容。不要连接到候选人自己已经打开的浏览器。不要读取 `DevToolsActivePort`。
+**使用 Playwright：** 运行 `node apply-scope.mjs launch-config` 并遵循其模式。在所选浏览器中打开职位 URL，对页面做快照，读取标题、URL 和可见内容。不要连接到正在运行的浏览器，也不要读取 `DevToolsActivePort`。
 
 **不使用 Playwright：** 请候选人：
 - 提供表单的截图（Read 工具可以读取图片）
